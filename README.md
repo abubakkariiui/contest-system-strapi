@@ -2,6 +2,13 @@
 
 Full-stack contest platform composed of a Strapi v5 backend and a React + Vite frontend. The system lets users register, join contests, submit answers, view leaderboards, and track their participation history with role-based access control.
 
+## Screenshots
+<img width="1917" height="986" alt="image" src="https://github.com/user-attachments/assets/e9ca7566-0086-4ed9-8866-16b304d4684a" />
+<img width="1920" height="988" alt="screencapture-localhost-5173-contests-2025-11-09-12_55_54" src="https://github.com/user-attachments/assets/8478d20f-5e4b-49f1-b7a3-ada5b1f456c3" />
+<img width="1919" height="986" alt="image" src="https://github.com/user-attachments/assets/0de3bce3-6c95-434b-aa26-567f94b6ce8e" />
+<img width="1919" height="992" alt="image" src="https://github.com/user-attachments/assets/235ab5ac-2f5f-45ec-a59a-307721df0766" />
+
+
 ## Features
 
 - Role-aware access: Admin and VIP users can see VIP contests; normal users see only normal contests; guests can browse but must sign in to participate.
