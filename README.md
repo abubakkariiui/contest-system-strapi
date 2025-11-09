@@ -1,61 +1,140 @@
-# 🚀 Getting started with Strapi
+# Contest Participation System
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
+Full-stack contest platform composed of a Strapi v5 backend and a React + Vite frontend. The system lets users register, join contests, submit answers, view leaderboards, and track their participation history with role-based access control.
 
-### `develop`
+## Features
 
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
+- Role-aware access: Admin and VIP users can see VIP contests; normal users see only normal contests; guests can browse but must sign in to participate.
+- Contest workflow: Join contests, answer single-select, multi-select, and true/false questions, submit once, and receive immediate scoring feedback.
+- Leaderboard & prizes: Submissions rank by score (then submission time). All highest scorers receive the configured prize flag.
+- User history: Dedicated endpoints and UI sections for in-progress contests, completed history, and prizes won.
+- Security & hardening: authenticated APIs, in-memory rate limiting, and solution hiding for non-admin viewers.
+- Tooling: Postman collection (`docs/contest-system.postman_collection.json`) covering authentication, contests, participation, and leaderboard flows.
+
+## Project Structure
 
 ```
+contest-system/
+├── config/                # Strapi configuration (database, middleware, rate limiting, plugins)
+├── src/                   # Strapi application code (content-types, controllers, services, utils)
+├── docs/contest-system.postman_collection.json
+├── frontend/              # React client (Vite)
+└── types/generated/       # Strapi type definitions
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+ (Strapi 5 supports up to Node 22.x).
+- npm 8+.
+
+### 1. Install dependencies
+
+```bash
+npm install          # install Strapi backend dependencies
+cd frontend
+npm install          # install React frontend dependencies
+```
+
+### 2. Configure environment variables
+
+- Backend: copy `.env.example` to `.env` (already provided). Defaults use SQLite.
+- Frontend: `frontend/.env` is pre-populated with `VITE_API_URL=http://localhost:1337`. Adjust if the backend runs elsewhere.
+
+### 3. Run the stack locally
+
+In separate terminals:
+
+```bash
+# Backend (Strapi)
 npm run develop
-# or
-yarn develop
+
+# Frontend (React)
+cd frontend
+npm run dev
 ```
 
-### `start`
+- Visit the Strapi admin UI at `http://localhost:1337/admin` to create an administrator account on first run.
+- The React client runs at `http://localhost:5173` by default.
 
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
+### Seed data & roles
 
-```
-npm run start
-# or
-yarn start
-```
+Core data is bootstrapped automatically by `src/index.js`, and you can re-run the process at any time with:
 
-### `build`
-
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
-
-```
-npm run build
-# or
-yarn build
+```bash
+npm run seed
 ```
 
-## ⚙️ Deployment
+The seeding step is idempotent. It ensures:
 
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
+- Custom `normal` and `vip` roles (in addition to Strapi's `authenticated` and `public`).
+- Permission assignments for all custom endpoints plus `/users/me`.
+- Sample contests:
+  - `General Knowledge Trivia` (normal access).
+  - `VIP Championship` (VIP-only).
+- Demo users and participations so the UI shows leaderboards, history, and prizes immediately.
 
-```
-yarn strapi deploy
-```
+#### Demo credentials
 
-## 📚 Learn more
+| Role   | Username         | Email                        | Password       |
+|--------|------------------|------------------------------|----------------|
+| Normal | `normal_player`  | `normal.player@example.com`  | `Password123!` |
+| Normal | `casual_player`  | `casual.player@example.com`  | `Password123!` |
+| VIP    | `vip_player`     | `vip.player@example.com`     | `Password123!` |
+| VIP    | `vip_challenger` | `vip.challenger@example.com` | `Password123!` |
 
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
+To promote another account to VIP, edit the user in the Strapi admin and assign the `vip` role.
 
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
+## API Overview
 
-## ✨ Community
+All routes are prefixed with `/api`. Authenticated requests require an `Authorization: Bearer <JWT>` header.
 
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
+| Method | Route                                   | Description                                | Auth Required |
+|--------|-----------------------------------------|--------------------------------------------|---------------|
+| POST   | `/auth/local`                           | Login                                       | No            |
+| POST   | `/auth/local/register`                  | Register (defaults to `normal` role)       | No            |
+| GET    | `/contests`                             | List contests filtered by caller role      | Optional      |
+| GET    | `/contests/:id`                         | Contest detail with questions (no answers) | Optional      |
+| POST   | `/contests/:id/join`                    | Join or resume a participation attempt     | Yes           |
+| POST   | `/contests/:id/submit`                  | Submit answers                             | Yes           |
+| GET    | `/contests/:id/leaderboard`             | Leaderboard for a contest                  | Yes           |
+| GET    | `/me/contests/in-progress`              | User's in-progress participations          | Yes           |
+| GET    | `/me/contests/history`                  | Completed participations with scores       | Yes           |
+| GET    | `/me/prizes`                            | Prizes won                                 | Yes           |
+| POST   | `/users/:id/role`                       | Update a user's role (`normal` or `vip`)   | Yes (Admin)   |
 
----
+Detailed request/response examples are available in the Postman collection located in `docs/`.
 
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+## Frontend Highlights
+
+- React Router provides navigation for contests, contest detail, history, in-progress lists, and prizes.
+- Centralized auth context handles JWT storage, login/register flows, and user bootstrap.
+- Contest detail page supports joining/resuming attempts, answering questions by type, submitting, viewing feedback, and loading the leaderboard.
+- Responsive layout with utility classes defined in `frontend/src/index.css`.
+
+## Rate Limiting
+
+A custom middleware (`src/middlewares/rate-limit`) guards `/api/*` endpoints:
+
+- Default window: 60 seconds.
+- Max requests per window: 100 (configurable in `config/middlewares.js`).
+- Identifies buckets by authenticated user ID or IP address; exceeding the quota returns HTTP 429 with retry metadata.
+
+## Testing & Builds
+
+- Backend: `npm run build` compiles the Strapi admin panel.
+- Frontend: `npm run build` (inside `frontend/`) creates the production bundle under `frontend/dist/`.
+
+## Notes & Limitations
+
+- Prize awarding marks every submission that ties for the top score as a winner.
+- Authentication is required for leaderboard access (mirrors backend policies).
+- The rate limiter is in-memory; for distributed deployments replace it with a shared store (Redis, etc.).
+
+## Documentation
+
+- Postman: `docs/contest-system.postman_collection.json`
+- README: this document
+
+Feel free to extend the UI or adapt the backend APIs as needed for additional contest mechanics or reporting.

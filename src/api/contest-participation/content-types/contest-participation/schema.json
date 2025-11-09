@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "contest_participations",
+  "info": {
+    "singularName": "contest-participation",
+    "pluralName": "contest-participations",
+    "displayName": "Contest Participation",
+    "description": "Tracks user progress, submissions, and scores for contests"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": false
+    },
+    "content-type-builder": {
+      "visible": true
+    }
+  },
+  "attributes": {
+    "contest": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::contest.contest"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "in_progress",
+        "submitted"
+      ],
+      "default": "in_progress",
+      "required": true
+    },
+    "score": {
+      "type": "decimal",
+      "default": 0
+    },
+    "responses": {
+      "type": "json",
+      "default": []
+    },
+    "startedAt": {
+      "type": "datetime"
+    },
+    "submittedAt": {
+      "type": "datetime"
+    },
+    "totalPoints": {
+      "type": "integer",
+      "default": 0
+    },
+    "prizeAwarded": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

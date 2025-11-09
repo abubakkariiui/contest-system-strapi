@@ -1,0 +1,72 @@
+{
+  "kind": "collectionType",
+  "collectionName": "contests",
+  "info": {
+    "singularName": "contest",
+    "pluralName": "contests",
+    "displayName": "Contest",
+    "description": "Configures contest metadata and access level"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-type-builder": {
+      "visible": true
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "accessLevel": {
+      "type": "enumeration",
+      "enum": [
+        "normal",
+        "vip"
+      ],
+      "default": "normal",
+      "required": true
+    },
+    "startTime": {
+      "type": "datetime",
+      "required": true
+    },
+    "endTime": {
+      "type": "datetime",
+      "required": true
+    },
+    "prizeTitle": {
+      "type": "string"
+    },
+    "prizeDescription": {
+      "type": "text"
+    },
+    "questions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::question.question",
+      "mappedBy": "contest"
+    },
+    "maxParticipants": {
+      "type": "integer",
+      "min": 1
+    },
+    "metadata": {
+      "type": "json",
+      "default": {}
+    }
+  }
+}

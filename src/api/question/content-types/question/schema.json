@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "questions",
+  "info": {
+    "singularName": "question",
+    "pluralName": "questions",
+    "displayName": "Question",
+    "description": "Stores contest questions with answer metadata"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-type-builder": {
+      "visible": true
+    }
+  },
+  "attributes": {
+    "contest": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::contest.contest",
+      "inversedBy": "questions"
+    },
+    "prompt": {
+      "type": "text",
+      "required": true
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "single",
+        "multi",
+        "boolean"
+      ],
+      "default": "single",
+      "required": true
+    },
+    "choices": {
+      "type": "json",
+      "default": []
+    },
+    "correctAnswers": {
+      "type": "json",
+      "default": []
+    },
+    "points": {
+      "type": "integer",
+      "default": 1
+    },
+    "order": {
+      "type": "integer"
+    }
+  }
+}
